@@ -2,7 +2,9 @@
 
 namespace System\Router;
 
+use Closure;
 use ReflectionClass;
+use ReflectionMethod;
 use System\Helper\Helper;
 use System\Exceptions\RouteNotFoundException;
 use System\Exceptions\HttpVerbIsNotValidException;
@@ -66,34 +68,69 @@ class Routing
         return $this->queryParam;
     }
 
-    public function get(string $uri, string|array $action): static
+    public function get(string $uri, array $action): RouteRepository
     {
-        $this->routes[HttpVerbsEnum::GET->value][trim($uri, '/')] = $action;
-        return $this;
+        $routeRepository = new RouteRepository()
+            ->setUri(trim($uri, '/'))
+            ->setHttpVerb(HttpVerbsEnum::GET)
+            ->setAction($action);
+
+        $this->routes[HttpVerbsEnum::GET->value][] = $routeRepository;
+
+
+        return $this->routes[HttpVerbsEnum::GET->value][array_key_last($this->routes[HttpVerbsEnum::GET->value])];
     }
 
-    public function post(string $uri, string|array $action): static
+    public function post(string $uri, array $action): RouteRepository
     {
-        $this->routes[HttpVerbsEnum::POST->value][trim($uri, '/')] = $action;
-        return $this;
+        $routeRepository = new RouteRepository()
+            ->setUri(trim($uri, '/'))
+            ->setHttpVerb(HttpVerbsEnum::POST)
+            ->setAction($action);
+
+        $this->routes[HttpVerbsEnum::POST->value][] = $routeRepository;
+
+
+        return $this->routes[HttpVerbsEnum::POST->value][array_key_last($this->routes[HttpVerbsEnum::GET->value])];
     }
 
-    public function put(string $uri, string|array $action): static
+    public function put(string $uri, array $action): RouteRepository
     {
-        $this->routes[HttpVerbsEnum::PUT->value][trim($uri, '/')] = $action;
-        return $this;
+        $routeRepository = new RouteRepository()
+            ->setUri(trim($uri, '/'))
+            ->setHttpVerb(HttpVerbsEnum::PUT)
+            ->setAction($action);
+
+        $this->routes[HttpVerbsEnum::PUT->value][] = $routeRepository;
+
+
+        return $this->routes[HttpVerbsEnum::PUT->value][array_key_last($this->routes[HttpVerbsEnum::GET->value])];
     }
 
-    public function delete(string $uri, string|array $action): static
+    public function delete(string $uri, array $action): RouteRepository
     {
-        $this->routes[HttpVerbsEnum::DELETE->value][trim($uri, '/')] = $action;
-        return $this;
+        $routeRepository = new RouteRepository()
+            ->setUri(trim($uri, '/'))
+            ->setHttpVerb(HttpVerbsEnum::GET)
+            ->setAction($action);
+
+        $this->routes[HttpVerbsEnum::DELETE->value][] = $routeRepository;
+
+
+        return $this->routes[HttpVerbsEnum::DELETE->value][array_key_last($this->routes[HttpVerbsEnum::GET->value])];
     }
 
-    public function patch(string $uri, string|array $action): static
+    public function patch(string $uri, array $action): RouteRepository
     {
-        $this->routes[HttpVerbsEnum::PATCH->value][trim($uri, '/')] = $action;
-        return $this;
+        $routeRepository = new RouteRepository()
+            ->setUri(trim($uri, '/'))
+            ->setHttpVerb(HttpVerbsEnum::GET)
+            ->setAction($action);
+
+        $this->routes[HttpVerbsEnum::PATCH->value][] = $routeRepository;
+
+
+        return $this->routes[HttpVerbsEnum::PATCH->value][array_key_last($this->routes[HttpVerbsEnum::GET->value])];
     }
 
 
@@ -118,14 +155,14 @@ class Routing
         foreach ($this->routes[$this->httpVerb->value] as $route => $callback) {
             $pattern = preg_replace('/\{[a-zA-Z_]+}/', '([a-zA-Z0-9-_]+)', $route);
 
+
             $pattern = "#^$pattern$#";
 
             if (preg_match($pattern, $this->currentUri, $matches)) {
                 array_shift($matches);
 
-                if (is_array($callback)) {
-                    $this->resolveAction($callback, $matches);
-                }
+                $this->resolveAction($callback, $matches);
+
                 return;
             }
         }

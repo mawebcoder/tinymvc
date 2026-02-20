@@ -5,7 +5,4 @@ namespace Application\Controllers;
 class AdminController
 {
 
-
-
-
 }

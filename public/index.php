@@ -16,13 +16,13 @@ spl_autoload_register(static function ($class) {
 
 $router = new \System\Router\Routing();
 
-$router->get('/article/{id}', [AdminController::class, 'index']);
+$router->get('/article/{id}/edit', [AdminController::class, 'index'])
+    ->setName('edit.article');
 
 
 try {
     $router->dispatchRoute();
 } catch (RouteNotFoundException $e) {
-
 }
 
 
