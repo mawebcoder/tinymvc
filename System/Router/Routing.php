@@ -2,6 +2,7 @@
 
 namespace System\Router;
 
+use ReflectionClass;
 use System\Exceptions\RouteNotFoundException;
 use System\Exceptions\HttpVerbIsNotValidException;
 
@@ -108,6 +109,9 @@ class Routing
     }
 
 
+    /**
+     * @throws RouteNotFoundException
+     */
     public function dispatchRoute(): void
     {
         foreach ($this->routes[$this->httpVerb->value] as $route => $callback) {
@@ -119,12 +123,7 @@ class Routing
                 array_shift($matches);
 
                 if (is_array($callback)) {
-                    [0 => $controller, 1 => $method] = $callback;
-
-                    //or
-//                    list($controller, $method) = $callback;
-
-                    call_user_func_array([new $controller, $method], $matches);
+                    $this->resolveAction($callback, $matches);
                 }
                 return;
             }
@@ -134,20 +133,11 @@ class Routing
     }
 
 
-    public function getArgumentName(string $pathParameter): string
+    public function resolveAction(array $callback, array $matches): void
     {
-        $startingString = strpos($pathParameter, '{');
+        [$controller, $method] = $callback;
 
-        $startingString += strlen('{');
-
-        $size = strpos($pathParameter, '}', $startingString) - $startingString;
-
-        return substr($pathParameter, $startingString, $size);
-    }
-
-    private function isPathParameter(string $uriSegment): bool
-    {
-        return preg_match('/^{[A-z]*}$/', $uriSegment);
+        call_user_func_array([new $controller, $method], $matches);
     }
 
 

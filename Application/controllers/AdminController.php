@@ -5,8 +5,12 @@ namespace Application\Controllers;
 class AdminController
 {
 
-    public function index(): void
+    public function __construct(public string $testClass='ali')
     {
-        echo 'this is index route';
+    }
+
+    public function index($id): void
+    {
+        echo $id;
     }
 }

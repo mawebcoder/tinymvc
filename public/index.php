@@ -1,8 +1,8 @@
 <?php
 
-use System\Router\Routing;
-use System\Exceptions\RouteNotFoundException;
+
 use Application\Controllers\AdminController;
+
 ini_set('display_errors', 1);
 
 spl_autoload_register(static function ($class) {
@@ -14,12 +14,8 @@ spl_autoload_register(static function ($class) {
 });
 
 
-$router = new Routing();
 
-$router->get('/article/{id}', [AdminController::class, 'index']);
-
-
-$router->dispatchRoute();
+var_dump(\System\Helper\Helper::resolve(\Application\Controllers\AdminController::class));
 
 
 
