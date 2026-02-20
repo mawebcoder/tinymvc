@@ -3,6 +3,7 @@
 namespace System\Router;
 
 use ReflectionClass;
+use System\Helper\Helper;
 use System\Exceptions\RouteNotFoundException;
 use System\Exceptions\HttpVerbIsNotValidException;
 
@@ -137,7 +138,7 @@ class Routing
     {
         [$controller, $method] = $callback;
 
-        call_user_func_array([new $controller, $method], $matches);
+        Helper::resolve($controller)->{$method}(...$matches);
     }
 
 
