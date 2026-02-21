@@ -114,4 +114,13 @@ class Helper
         static::view($path, $data);
     }
 
+    public static function url(string $path, array $query = []): string
+    {
+        if (!$query) {
+            return static::asset($path);
+        }
+
+        return static::asset($path) . '?' . http_build_query($query);
+    }
+
 }
