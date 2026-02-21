@@ -92,7 +92,7 @@ class Helper
         if ($data) {
             extract($data);
         }
-        $path = rtrim(self::getConfig('app.view.base_path'), DIRECTORY_SEPARATOR) .
+        $path = rtrim(self::getConfig('view.base_path'), DIRECTORY_SEPARATOR) .
             DIRECTORY_SEPARATOR .
             str_replace('.', DIRECTORY_SEPARATOR, $path) . '.php';
         if (!file_exists($path)) {
