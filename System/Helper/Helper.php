@@ -86,4 +86,17 @@ class Helper
 
         return $array;
     }
+
+    /**
+     * @throws ConfigFileNotExistsException
+     */
+    public static function view(string $path, array $data = []): void
+    {
+        if ($data) {
+            extract($data);
+        }
+        require_once rtrim(self::getConfig('app.view.base_path'), DIRECTORY_SEPARATOR) .
+            DIRECTORY_SEPARATOR .
+            str_replace('.', DIRECTORY_SEPARATOR, $path) . '.php';
+    }
 }
