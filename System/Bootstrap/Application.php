@@ -10,7 +10,6 @@ use System\Exceptions\ConfigFileNotExistsException;
 class Application
 {
 
-
     /**
      * @throws ReflectionException
      * @throws ConfigFileNotExistsException
