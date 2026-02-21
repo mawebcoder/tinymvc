@@ -100,4 +100,10 @@ class Helper
         }
         require_once $path;
     }
+
+    public static function asset(string $path): string
+    {
+        return rtrim(Url::domain(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $path;
+    }
+
 }
