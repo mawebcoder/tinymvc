@@ -4,6 +4,6 @@ return [
     'port' => '3306',
     'host' => 'localhost',
     'database' => 'laravel',
-    'username' => 'roo',
+    'username' => 'root',
     'password' => '',
 ];
