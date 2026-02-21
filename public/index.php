@@ -1,8 +1,8 @@
 <?php
 
 
-use Application\Controllers\AdminController;
-use System\Exceptions\RouteNotFoundException;
+use System\Bootstrap\Application;
+use System\Helper\Helper;
 
 ini_set('display_errors', 1);
 
@@ -14,16 +14,13 @@ spl_autoload_register(static function ($class) {
         ) . '.php';
 });
 
-$router = new \System\Router\Routing();
+$application = Helper::resolve(Application::class);
 
-$router->get('/article/{id}/edit', [AdminController::class, 'index'])
-    ->setName('edit.article');
+$application->handle();
 
 
-try {
-    $router->dispatchRoute();
-} catch (RouteNotFoundException $e) {
-}
+
+
 
 
 

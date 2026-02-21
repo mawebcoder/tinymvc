@@ -15,6 +15,8 @@ class Routing
     private ?string $currentUri = null;
     private array $queryParam = [];
 
+    public static array $routeFiles = [];
+
     public ?HttpVerbsEnum $httpVerb = null;
 
 
@@ -27,7 +29,14 @@ class Routing
     {
         $this->parseUrl();
 
+        $this->loadRouteFiles();
+
         $this->initializeRoutes();
+    }
+
+    public static function loadFile(string $path): void
+    {
+        static::$routeFiles[] = $path;
     }
 
     /**
@@ -58,15 +67,6 @@ class Routing
         $this->routes[HttpVerbsEnum::HEAD->value] = [];
     }
 
-    public function getCurrentUrl(): ?string
-    {
-        return $this->currentUrl ?? null;
-    }
-
-    public function getQueryParam(): array
-    {
-        return $this->queryParam;
-    }
 
     public function get(string $uri, array $action): RouteRepository
     {
@@ -152,7 +152,15 @@ class Routing
      */
     public function dispatchRoute(): void
     {
-        foreach ($this->routes[$this->httpVerb->value] as $route => $callback) {
+        foreach ($this->routes[$this->httpVerb->value] as $routeRepository) {
+            /**
+             * @type RouteRepository $routeRepository
+             */
+
+            $route = $routeRepository->getUri();
+
+            $action = $routeRepository->getAction();
+
             $pattern = preg_replace('/\{[a-zA-Z_]+}/', '([a-zA-Z0-9-_]+)', $route);
 
 
@@ -161,7 +169,7 @@ class Routing
             if (preg_match($pattern, $this->currentUri, $matches)) {
                 array_shift($matches);
 
-                $this->resolveAction($callback, $matches);
+                $this->resolveAction($routeRepository, $matches);
 
                 return;
             }
@@ -171,11 +179,22 @@ class Routing
     }
 
 
-    public function resolveAction(array $callback, array $matches): void
+    public function resolveAction(RouteRepository $routeRepository, array $matches): void
     {
-        [$controller, $method] = $callback;
+        [$controller, $method] = $routeRepository->getAction();
 
+        /**
+         * @todo check method exists
+         * @todo apply middlewares
+         */
         Helper::resolve($controller)->{$method}(...$matches);
+    }
+
+    private function loadRouteFiles(): void
+    {
+        foreach (static::$routeFiles as $file) {
+            require_once $file;
+        }
     }
 
 

@@ -43,4 +43,14 @@ class RouteRepository
 
         return $this;
     }
+
+    public function getUri(): string
+    {
+        return  $this->uri;
+    }
+
+    public function getAction(): array
+    {
+        return  $this->action;
+    }
 }

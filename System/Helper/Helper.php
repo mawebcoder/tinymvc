@@ -7,6 +7,7 @@ use ReflectionException;
 use ReflectionParameter;
 use Exception;
 use RuntimeException;
+use System\Exceptions\ConfigFileNotExistsException;
 
 class Helper
 {
@@ -17,6 +18,8 @@ class Helper
     public static function resolve(string $class): object
     {
         $reflection = new ReflectionClass($class);
+
+
         $constructor = $reflection->getConstructor();
 
         if (!$constructor || !$constructor->getParameters()) {
@@ -24,7 +27,6 @@ class Helper
         }
 
         $constructorParams = [];
-
         foreach ($constructor->getParameters() as $param) {
             $type = $param->getType();
 
@@ -38,5 +40,50 @@ class Helper
         }
 
         return $reflection->newInstanceArgs($constructorParams);
+    }
+
+    public static function basePath(string $path): string
+    {
+        return $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . trim($path, '/');
+    }
+
+    /**
+     * @throws ConfigFileNotExistsException
+     */
+    public static function getConfig(string $path, mixed $default = null): mixed
+    {
+        $key = explode('.', $path);
+
+        if (count($key) <= 1) {
+            return $default;
+        }
+
+        $fileName = $key[0];
+
+        $file = static::basePath("config" . DIRECTORY_SEPARATOR . "$fileName.php");
+
+        if (!file_exists($file)) {
+            throw new ConfigFileNotExistsException("Config file '{$file}' does not exist");
+        }
+
+        $configFile = require $file;
+
+        return static::array_get($configFile, trim(strstr($path, '.'), '.'));
+    }
+
+
+    public static function array_get(array $array, string $path, $default = null): mixed
+    {
+        $keys = explode('.', $path);
+
+        foreach ($keys as $key) {
+            if (is_array($array) && array_key_exists($key, $array)) {
+                $array = $array[$key];
+            } else {
+                return $default;
+            }
+        }
+
+        return $array;
     }
 }
