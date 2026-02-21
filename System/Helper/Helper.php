@@ -4,9 +4,8 @@ namespace System\Helper;
 
 use ReflectionClass;
 use ReflectionException;
-use ReflectionParameter;
-use Exception;
 use RuntimeException;
+use System\Exceptions\ViewNotFoundException;
 use System\Exceptions\ConfigFileNotExistsException;
 
 class Helper
@@ -87,16 +86,18 @@ class Helper
         return $array;
     }
 
-    /**
-     * @throws ConfigFileNotExistsException
-     */
+
     public static function view(string $path, array $data = []): void
     {
         if ($data) {
             extract($data);
         }
-        require_once rtrim(self::getConfig('app.view.base_path'), DIRECTORY_SEPARATOR) .
+        $path = rtrim(self::getConfig('app.view.base_path'), DIRECTORY_SEPARATOR) .
             DIRECTORY_SEPARATOR .
             str_replace('.', DIRECTORY_SEPARATOR, $path) . '.php';
+        if (!file_exists($path)) {
+            throw new ViewNotFoundException("View file '{$path}' does not exist");
+        }
+        require_once $path;
     }
 }

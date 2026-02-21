@@ -2,6 +2,8 @@
 
 namespace System\Trait;
 
+use System\Helper\Helper;
+
 trait RedirectTrait
 {
 
@@ -10,5 +12,11 @@ trait RedirectTrait
         http_response_code($statusCode);
 
         header("Location: $url");
+    }
+
+
+    public function view(string $path, array $data = []): void
+    {
+        Helper::view($path, $data);
     }
 }
