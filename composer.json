@@ -1,0 +1,18 @@
+{
+    "name": "mvc/php",
+    "description": "This is just a simple php mvc",
+    "type": "library",
+    "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Application\\": "Application/",
+      "System\\": "System/"
+    }
+  },
+    "authors": [
+        {
+            "name": "mohammad"
+        }
+    ],
+    "require": {}
+}
