@@ -106,4 +106,12 @@ class Helper
         return rtrim(Url::domain(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $path;
     }
 
+    /**
+     * @throws ViewNotFoundException
+     */
+    public static function includeView(string $path, array $data = []): void
+    {
+        static::view($path, $data);
+    }
+
 }
