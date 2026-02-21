@@ -47,7 +47,10 @@ class Application
      */
     private function dispatchRoutes(): void
     {
-        Helper::resolve(Routing::class);
+
+        $router = Helper::resolve(Routing::class);
+
+        $router->dispatchRoute();
     }
 
 }
