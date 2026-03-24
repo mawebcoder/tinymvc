@@ -43,7 +43,7 @@ class Helper
 
     public static function basePath(string $path): string
     {
-        return $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . trim($path, '/');
+        return __DIR__ . DIRECTORY_SEPARATOR . '../../' . DIRECTORY_SEPARATOR . trim($path, '/');
     }
 
     /**
@@ -121,6 +121,11 @@ class Helper
         }
 
         return static::asset($path) . '?' . http_build_query($query);
+    }
+
+    public static function isRunningConsole(): bool
+    {
+        return isset($_SERVER['argv']);
     }
 
 }

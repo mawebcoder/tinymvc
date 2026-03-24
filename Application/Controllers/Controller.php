@@ -6,5 +6,5 @@ use System\Trait\RedirectTrait;
 
 class Controller
 {
-    use RedirectTrait;
+   use RedirectTrait;
 }

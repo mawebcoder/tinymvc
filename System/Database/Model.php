@@ -2,65 +2,52 @@
 
 namespace System\Database;
 
-use PDO;
-use System\Helper\Helper;
-use Exception;
-use System\Exceptions\DatabaseConnectionException;
-use System\Exceptions\ConfigFileNotExistsException;
+
+use ReflectionClass;
+
+use System\Database\Driver\PDODriver;
 
 class Model
 {
-    public static ?PDO $pdo=null;
 
+    public static PDODriver $connection;
+    protected string $table;
 
-    /**
-     * @throws ConfigFileNotExistsException
-     * @throws DatabaseConnectionException
-     */
-    public static function connect(): void
+    public function __construct()
     {
-        if (!is_null(self::$pdo)) {
-            return;
-        }
+        $initializer = static function () {
+            return new PDODriver();
+        };
 
-        [$host, $port, $database, $username, $password] = static::getConfigs();
+        $reflection = new ReflectionClass(PDODriver::class);
 
-        foreach (range(1, 5) as $try) {
-            try {
-                self::$pdo = new PDO(
-                    "mysql:host={$host};port={$port};dbname={$database};charset=utf8mb4",
-                    $username,
-                    $password
-                );
+        self::$connection = $reflection->newLazyProxy($initializer);
+    }
 
-                self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    public function table(): string
+    {
+        $table = '';
 
-                self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        $classNameExploded = explode('\\', static::class);
 
-                self::$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-                break;
-            } catch (Exception $exception) {
-                sleep(1);
+        $name = array_pop($classNameExploded);
 
-                if ($try === 5) {
-                    throw new DatabaseConnectionException($exception->getMessage());
+        foreach (str_split($name) as $index => $char) {
+            if (preg_match('/[A-Z]/', $char)) {
+                if ($index === 0) {
+                    $table .= strtolower($char);
+                    continue;
                 }
-
+                $table .= '_' . strtolower($char);
                 continue;
             }
+            $table .= $char;
         }
+
+        $this->table = $table;
+
+        return $table;
     }
-    /**
-     * @return array
-     * @throws ConfigFileNotExistsException
-     */
-    private static function getConfigs(): array
-    {
-        $host = Helper::getConfig('database.host');
-        $port = Helper::getConfig('database.port');
-        $database = Helper::getConfig('database.database');
-        $username = Helper::getConfig('database.username');
-        $password = Helper::getConfig('database.password');
-        return array($host, $port, $database, $username, $password);
-    }
+
+
 }

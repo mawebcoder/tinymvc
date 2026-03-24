@@ -1,4 +1,5 @@
 <?php
+
 use System\Router\Routing;
 use Application\Controllers\AdminController;
 

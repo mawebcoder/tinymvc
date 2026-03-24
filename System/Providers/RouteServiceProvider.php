@@ -10,6 +10,10 @@ class RouteServiceProvider
 
     public function register(): void
     {
+        if (Helper::isRunningConsole()){
+            return;
+        }
+
         $files = glob(Helper::basePath('routes/*.php'));
 
         foreach ($files as $file) {

@@ -11,4 +11,16 @@ enum HttpVerbsEnum: string
     case DELETE = 'DELETE';
     case OPTIONS = 'OPTIONS';
     case PATCH = 'PATCH';
+
+    public function hasBody(): bool
+    {
+        return match ($this) {
+            self::POST,
+            self::PUT,
+            self::DELETE,
+            self::OPTIONS,
+            self::PATCH => true,
+            default => false,
+        };
+    }
 }

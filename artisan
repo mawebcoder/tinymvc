@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+
+use System\Bootstrap\Application;
+use System\Providers\CommandServiceProvider;
+
+require __DIR__ . '/vendor/autoload.php';
+
+new Application()->handle();
+
+$arguments = $_SERVER['argv'];
+
+unset($arguments[0]);
+
+if (!isset($arguments[1])) {
+    die();
+}
+
+$command = $arguments[1];
+
+$class = CommandServiceProvider::$commands[$command] ?? null;
+
+if (is_null($class) || !class_exists($class)) {
+    die();
+}
+
+new $class()->handle();

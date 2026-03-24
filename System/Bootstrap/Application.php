@@ -10,6 +10,7 @@ use System\Exceptions\ConfigFileNotExistsException;
 class Application
 {
 
+
     /**
      * @throws ReflectionException
      * @throws ConfigFileNotExistsException
@@ -18,7 +19,9 @@ class Application
     {
         $this->runServiceProviders();
 
-        $this->dispatchRoutes();
+        if (!Helper::isRunningConsole()) {
+            $this->dispatchRoutes();
+        }
     }
 
 
@@ -46,7 +49,6 @@ class Application
      */
     private function dispatchRoutes(): void
     {
-
         $router = Helper::resolve(Routing::class);
 
         $router->dispatchRoute();
